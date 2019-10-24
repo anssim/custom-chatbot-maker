@@ -1,13 +1,13 @@
-custom chatbot maker
-a simple chatbot where you can customize the avatar, description, and name of chatbot, along with unique dialogue.
+CUSTOM CHATBOT MAKER 2019
+
+A simple chatbot where you can customize the avatar, description, and name of chatbot, along with unique dialogue.
 
 FEATURES
 Creating and customizing chatbots with ready to use webchat.
 
-Select chatbot with URL parameters. 
+Modify chatbots and give them unique dialogue.
 
-
-
+Select which chatbot talk with using URL parameters. 
 
 INSTALLATION
 Download and install Node.js: https://nodejs.org/en/
@@ -27,12 +27,12 @@ Required packages:
 	linkifyjs,
 	natural.
 
-
 USAGE
 
 1. Set up database.
 1.1. Setting up DynamoDB access (web or local): https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SettingUp.html
 1.2. Create default db tables for DynamoDB by copying below JavaScript code to JS file and run with 'node filename.js'. Depending on AWS access key used, AWS SDK creates tables for either local or web.
+	
 	// Load the AWS SDK for Node.js
 	var AWS = require("aws-sdk");
 
