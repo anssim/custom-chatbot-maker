@@ -1,0 +1,19 @@
+{
+  "name": "CustomChatbotMaker",
+  "version": "1.0.0",
+  "description": "web based chatbot maker with option to create customizable chatbots",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Anssi Meisalmi",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.493.0",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.4",
+    "express": "^4.16.4",
+    "jquery": "^3.4.1",
+    "linkifyjs": "^2.1.8",
+    "natural": "^0.6.3"
+  }
+}

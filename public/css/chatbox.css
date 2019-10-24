@@ -1,0 +1,180 @@
+body {
+     font-family: 'Nunito', sans-serif;
+     font-size: 16px;
+     font-weight: 300;
+     color: #3d455c;
+     margin: 0;
+     padding: 0;
+     overflow-x: hidden;
+}
+ h1, h2, h3, h4, h5, h6 {
+     font-family: 'Nunito Sans', sans-serif;
+     font-weight: 700;
+     color: #212631;
+     margin: 10px 0px 10px;
+}
+ h1 {
+     font-size: 34px;
+}
+ h2 {
+     font-size: 28px;
+}
+ h3 {
+     font-size: 23px;
+}
+ h4 {
+     font-size: 16px;
+}
+ a {
+     font-weight: 600;
+     color: #212631;
+     text-decoration: none;
+}
+ a:hover, a:focus{
+     color: #212631;
+     text-decoration: underline;
+     outline: none;
+}
+
+/* Button used to open the chat form - fixed at the bottom of the page */
+.open-button {
+  width: 140px;
+  padding: 9px 45px;
+  border: none;
+  background-color: #212631;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 13px;
+  color: #fff;
+  -webkit-transition: 0.2s opacity;
+  transition: 0.2s opacity;
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+}
+
+.open-button:hover, .open-button:focus {
+  text-decoration: none;
+  opacity:0.9;
+  font-weight: bold;
+}
+
+/* The popup chat - hidden by default */
+.chat-popup {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  right: 5px;
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+  background-color: white;
+}
+
+/* Add styles to the form container */
+.chat-box {
+  max-width: 300px;
+  background-color: white;
+  min-height: 200px;
+}
+
+.chat-box .img{
+  float: left;
+  width: 37px;
+  height: 37px;
+  margin: 0px 5px 5px 5px;
+}
+.chat-box .img:hover, .chat-box .img:focus{
+  opacity: 0.9;
+}
+
+.chat-box .name{
+  text-align: left;
+  margin: 5px;
+}
+
+.chat-box .description{
+  text-align: left;
+  color: #212631;
+  margin: 0px 0px 0px 8px;
+  padding: 5px;
+}
+
+/* Bot messages */
+.chat-box .messages{
+  max-height: 200px;
+  min-height: 200px;
+  padding: 5px;
+  margin: 0px 5px 5px 5px;
+  border: 3px;
+  background: #fff;
+  resize: none;
+  overflow: auto;
+  font-weight: 500;
+  font-size: 14px;
+  border: 3px solid #f1f1f1;
+}
+
+/* Bot messages */
+.chat-box .bot-message{
+  color: #337ab7;
+  text-align: left;
+  overflow: auto;
+}
+
+/* User messages */
+.chat-box .user-message{
+  color: #337ab7;
+  background-color: #f1f1f1;
+  text-align: right;
+  overflow: auto;
+  border-radius: 5px;
+  padding: 0px 5px 0px 0px;
+}
+
+.chat-box .text-area {
+  height: 30px;
+  width: 255px;
+  margin: 0px 5px 5px 5px;
+  border: 3px solid #f1f1f1;
+  padding: 5px;
+  -webkit-transition: 0.2s border;
+  transition: 0.2s border;
+}
+
+.chat-box .text-area:focus {
+  border-color: #3d455c;
+}
+
+/* Set a style for the submit/send button */
+.chat-box .btn {
+  width: 30px;
+  margin: 0px 5px 0px 0px;
+  border: 3px;
+  padding: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 3px;
+  text-transform: uppercase;
+  color: #FFF;
+  float: right;
+  background-color: #4BB92F;
+  -webkit-transition: 0.2s opacity;
+  transition: 0.2s opacity;
+}
+
+/* Add a red background color to the cancel button */
+.chat-box .close {
+  background-color: red;
+}
+/* Add a red background color to the cancel button */
+.chat-box .send:hover, .chat-box .send:focus {
+  background-color: green;
+  opacity: 0.5;
+}
+
+
+.chat-box .btn:hover, .chat-box .btn:focus {
+  text-decoration: none;
+  opacity: 0.9;
+  font-weight: bold;
+}

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+	
+	<head>
+		<meta charset="utf-8">
+		<title>Modify chatbots</title>
+		<!-- Google font -->
+		<link href="https://fonts.googleapis.com/css?family=Nunito+Sans:700%7CNunito:300,600" rel="stylesheet"> 
+		<!-- Bootstrap -->
+		<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"/>
+		<!-- Font Awesome Icon -->
+		<link rel="stylesheet" href="css/font-awesome.min.css">
+		<!-- Custom stlylesheet -->
+		<link type="text/css" rel="stylesheet" href="css/style.css"/>
+		
+		<script src="js/jquery.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+	</head>
+	<body>
+
+		<div>
+			<h1>Modify chatbots</h2>
+			
+			<form id=createForm style="background-color:#F8F8F8">
+				<fieldset>
+				<legend>Create new chatbot</legend>
+					Chatbot identity:
+					<input type="text" name="identity" placeholder="chatbot"><br>
+
+					Chatbot description:
+					<input type="text" name="description" placeholder="I talk to people."><br>
+
+					Chatbot avatar image url:
+					<input type="text" name="url" placeholder="img/face1.png"><br>
+
+					Create new dialogue table for chatbot?<br>
+					<input type="radio" name="new_table" value="yes" checked> Yes<br>
+					<input type="radio" name="new_table" value="bo"> No<br>
+
+					<input type="submit" class="btn" value="Submit new chatbot">
+				</fieldset>
+			</form>
+			<br>
+			<form id=deleteForm>
+				<fieldset>
+				<legend>Delete chatbot table</legend>
+					Chatbot identity:
+					<input type="text" name="identity" placeholder="chatbot"><br>
+
+					<input type="submit" class="btn" value="Delete chatbot">
+				</fieldset>
+			</form>
+			<br>
+			<form id=updateForm style="background-color:#F8F8F8">
+				<fieldset>
+				<legend>Update chatbot info</legend>
+					Chatbot identity:
+					<input type="text" name="identity" placeholder="chatbot"><br>
+
+					Chatbot description:
+					<input type="text" name="description" placeholder="I talk to people a lot."><br>
+
+					Chatbot avatar image url:
+					<input type="text" name="url" placeholder="img/face2.png"><br>
+
+					<input type="submit" class="btn" value="Update chatbot">
+				</fieldset>
+			</form>
+		</div>
+		<br>
+		<div>
+			<form id=addResponseForm>
+				<fieldset>
+				<legend>Add response to chatbot</legend>
+					Chatbot identity:
+					<input type="text" name="identity" placeholder="chatbot"><br>
+
+					Chatbot response:
+					<input type="text" name="response" placeholder="Hello!"><br>
+
+					Chatbot keywords. Separate keywords with a whitespace ' ':
+					<input type="text" name="keywords" placeholder="hi hello hey"><br>
+
+					Chatbot altervative responses. Separate responses with a semicolon ';':
+					<input type="text" name="alternatives" placeholder="Hi there.;Good day!;Hello there!"><br>
+
+					<input type="submit" class="btn" value="Submit new response">
+				</fieldset>
+			</form>
+			<br>
+			<form id=deleteResponseForm style="background-color:#F8F8F8">
+				<fieldset>
+				<legend>Delete chatbot response</legend>
+					Chatbot identity:
+					<input type="text" name="identity" placeholder="chatbot"><br>
+
+					Chatbot response:
+					<input type="text" name="response" placeholder="Hello!"><br>
+
+					<input type="submit" class="btn" value="Delete response">
+				</fieldset>
+			</form>
+		</div>
+		<br>
+		<div id="results">
+			<fieldset>
+				<legend>Query results</legend>
+				<div id="result"></div>
+			</fieldset>
+		</div>
+		
+		<script>
+			$(document).ready(function(){
+				$('#createForm').submit(function (e) {
+					e.preventDefault();
+					$.ajax({
+						url: 'http://' + window.location.hostname + ':3000/chatbot',
+						type: "POST",
+						dataType: 'json',
+						data: $('#createForm').serialize(),
+						success:function(result){
+							$("#result").append(result + "<br>");
+						} 
+					});
+					$("#createForm")[0].reset();
+				});
+				$('#deleteForm').submit(function (e) {
+					e.preventDefault();
+					$.ajax({
+						url: 'http://' + window.location.hostname + ':3000/del_chatbot',
+						type: "POST",
+						dataType: 'json',
+						data: $('#deleteForm').serialize(),
+						success:function(result){
+							$("#result").append(result + "<br>");
+						} 
+					});
+					$("#deleteForm")[0].reset();
+				}); 
+				$('#updateForm').submit(function (e) {
+					e.preventDefault();
+					$.ajax({
+						url: 'http://' + window.location.hostname + ':3000/update_chatbot',
+						type: "POST",
+						dataType: 'json',
+						data: $('#updateForm').serialize(),
+						success:function(result){
+							$("#result").append(result + "<br>");
+						} 
+					});
+					$("#updateForm")[0].reset();
+				});
+				
+				$('#addResponseForm').submit(function (e) {
+					e.preventDefault();
+					$.ajax({
+						url: 'http://' + window.location.hostname + ':3000/response',
+						type: "POST",
+						dataType: 'json',
+						data: $('#addResponseForm').serialize(),
+						success:function(result){
+							$("#result").append(result + "<br>");
+						} 
+					});
+					$("#addResponseForm")[0].reset();
+				});
+				$('#deleteResponseForm').submit(function (e) {
+					e.preventDefault();
+					$.ajax({
+						url: 'http://' + window.location.hostname + ':3000/del_response',
+						type: "POST",
+						dataType: 'json',
+						data: $('#deleteResponseForm').serialize(),
+						success:function(result){
+							$("#result").append(result + "<br>");
+						} 
+					});
+					$("#deleteResponseForm")[0].reset();
+				});
+			});
+		</script>
+		
+
+	</body>
+</html>

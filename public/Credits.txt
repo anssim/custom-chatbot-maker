@@ -1,0 +1,6 @@
+blog theme credits:
+Jquery
+Bootstrap
+Font-awesome
+Images : Unsplash
+Goolgle fonts : Nunito & Nunito-Sans
