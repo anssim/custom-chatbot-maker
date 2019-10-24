@@ -30,9 +30,11 @@ Required packages:
 USAGE
 
 1. Set up database.
+
 1.1. Setting up DynamoDB access (web or local): https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SettingUp.html
+
 1.2. Create default db tables for DynamoDB by copying below JavaScript code to JS file and run with 'node filename.js'. Depending on AWS access key used, AWS SDK creates tables for either local or web.
-	
+
 	// Load the AWS SDK for Node.js
 	var AWS = require("aws-sdk");
 
