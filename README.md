@@ -1,15 +1,16 @@
 CUSTOM CHATBOT MAKER 2019
+==
 
-A simple chatbot where you can customize the avatar, description, and name of chatbot, along with unique dialogue.
+A simple web based chatbot with customizable dialogue, style, avatar, description, and name of chatbot.
 
-FEATURES
-Creating and customizing chatbots with ready to use webchat.
+## Features
+Creating and customizing chatbots with ready to use online chat.
 
 Modify chatbots and give them unique dialogue.
 
 Select which chatbot talk with using URL parameters. 
 
-INSTALLATION
+## Installation
 Download and install Node.js: https://nodejs.org/en/
 
 Download and install npm: https://www.npmjs.com/
@@ -27,7 +28,7 @@ Required packages:
 	linkifyjs,
 	natural.
 
-USAGE
+## Usage
 
 1. Set up database.
 
@@ -185,7 +186,7 @@ USAGE
 4. Talk to bot by adding 'bot_id' (bot name used) url parameter. Example: 'http://localhost:3000/?user_id=1&bot_id=happy'
 
 	
-LICENSE
+## License
 
 Copyright 2019 Anssi Meisalmi
 
