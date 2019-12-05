@@ -8,7 +8,7 @@ Creating and customizing chatbots with ready to use online chat.
 
 Modify chatbots and give them unique dialogue.
 
-Select which chatbot talk with using URL parameters. 
+Select chatbot to talk to by adding bot_id in URL parameters.
 
 ## Installation
 Download and install Node.js: https://nodejs.org/en/
@@ -132,10 +132,10 @@ Required packages:
 	var docClient = new AWS.DynamoDB.DocumentClient();
 	
 	// Populating bot_identities table:
-	var chatbotSchema = [{identity: "happy", description: "I am feeling good!", image_url: "img/face1.png"},
-						  {identity: "sad", description: "I am feeling sad!", image_url: "img/face2.png"},
-						  {identity: "neutral", description: ". . .", image_url: "img/face3.png"},
-						  {identity: "happysad", description: "I don't know what to feel.", image_url: "img/face4.png"}];
+	var chatbotSchema = [{identity: "happy", description: "I am feeling good!", image_url: "img/face1.png", bot_name: "HappyBot"},
+						  {identity: "sad", description: "I am feeling sad!", image_url: "img/face2.png", bot_name: "SadBot"},
+						  {identity: "neutral", description: ". . .", image_url: "img/face3.png", bot_name: "NeutralBot"},
+						  {identity: "happysad", description: "I don't know what to feel.", image_url: "img/face4.png", bot_name: "HappySadBot"}];
 
 	chatbotSchema.forEach(function(item) {
 		var params = {
@@ -143,7 +143,8 @@ Required packages:
 			Item: {
 				"identity":  item.identity,
 				"description": item.description,
-				"image_url": item.image_url
+				"image_url": item.image_url,
+				"bot_name": item.bot_name
 			}
 		};
 		docClient.put(params, function(err, data) {
@@ -179,11 +180,11 @@ Required packages:
 		});
 	});
 	
-2. Run server locally with 'node server.js'
+2. Run server locally with command 'node server.js'. Ports will likely need to be setup first. 
 
-3. Create and modify bots by adding bots to database. For quick access, navigate to route /modify.html.
+3. Create and modify bots by adding bots to database. For quick access, setup password in server.js and navigate to route /modify.html?p=1234.
 
-4. Talk to bot by adding 'bot_id' (bot name used) url parameter. Example: 'http://localhost:3000/?user_id=1&bot_id=happy'
+4. Talk to bot by adding 'bot_id' as url parameter. Example: 'http://localhost:3000/?user_id=01&bot_id=happy'
 
 	
 ## License
