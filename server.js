@@ -8,6 +8,9 @@ var linkify = require('linkifyjs');
 var app = express();
 var port = process.env.PORT || 3000;
 
+var admin_password = "1234";
+var password_fail_message = "Password authentication <b>failed</b>.";
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
@@ -33,30 +36,57 @@ app.get('/chat', function (req, res){
 });
 
 app.post('/chatbot', function(req, res){
-	bot.create_bot(req.body.identity, req.body.description, req.body.url, req.body.new_table, function(result) {
-		res.json(result);
-	});
+	var admin_pwd = req.query.p; // check admin password
+	console.log(req.body);
+	if (admin_pwd == admin_password){
+		bot.create_bot(req.body.identity, req.body.description, req.body.image_url, req.body.bot_name, req.body.new_table, function(result) {
+			res.json(result);
+		});
+	} else {
+		res.json(password_fail_message);
+	}
+	
 });
 app.post('/del_chatbot', function(req, res){
-	bot.delete_bot(req.body.identity, function(result) {
-		res.json(result);
-	});
+	var admin_pwd = req.query.p; // check admin password
+	if (admin_pwd == admin_password){
+		bot.delete_bot(req.body.identity, function(result) {
+			res.json(result);
+		});
+	} else {
+		res.json(password_fail_message);
+	}
 });
 app.post('/update_chatbot', function(req, res){
-	bot.update_bot(req.body.identity, req.body.description, req.body.url, function(result) {
-		res.json(result);
-	});
+	var admin_pwd = req.query.p; // check admin password
+	if (admin_pwd == admin_password){
+		bot.update_bot(req.body.identity, req.body.description, req.body.image_url, req.body.bot_name, function(result) {
+			res.json(result);
+		});
+	} else {
+		res.json(password_fail_message);
+	}
 });
 
 app.post('/response', function(req, res){
-	bot.add_response(req.body.identity, req.body.response, req.body.keywords, req.body.alternatives, function(result) {
-		res.json(result);
-	});
+	var admin_pwd = req.query.p; // check admin password
+	if (admin_pwd == admin_password){
+		bot.add_response(req.body.identity, req.body.response, req.body.keywords, req.body.alternatives, function(result) {
+			res.json(result);
+		});
+	} else {
+		res.json(password_fail_message);
+	}
 });
 app.post('/del_response', function(req, res){
-	bot.delete_response(req.body.identity, req.body.response, function(result) {
-		res.json(result);
-	});
+	var admin_pwd = req.query.p; // check admin password
+	if (admin_pwd == admin_password){
+		bot.delete_response(req.body.identity, req.body.response, function(result) {
+			res.json(result);
+		});
+	} else {
+		res.json(password_fail_message);
+	}
 });
 
 
@@ -95,16 +125,23 @@ app.post('/messages', function(req, res){
 	
 	// give user message to chatbot and send bot reply to client
 	bot.chat(msg, user_id, bot_id, function(best_result) {
-		if (linkify.test(best_result)){
+		var array = linkify.find(best_result);
+		console.log(array);
+		
+		if (array.length){
 			var url = "";
 			if (best_result.includes("user_id")){
 				url = best_result.replace("user_id", user_id); // attach user id to questionnaire url
 			} else {
 				url = best_result;
 			}
-			res.send([url, 1]); // send url, and 1 to signify this is an url
+			for (var x in array){
+				var href = '<a href="' + array[x].href + '">' + array[x].value + '</a>';
+				url = url.replace(array[x].value, href);
+			}
+			res.send(url); // send url, and 1 to signify this is an url
 		} else {
-			res.send([best_result, 0]); // send bot reply
+			res.send(best_result); // send bot reply
 		}
 	});
 });

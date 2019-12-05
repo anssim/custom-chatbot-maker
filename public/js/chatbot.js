@@ -7,12 +7,14 @@ var AWS = require("aws-sdk");
 // Set the region
 AWS.config.update({
   region: "eu-north-1",
-  endpoint: "http://localhost:8000" // remove comment for local
+  //endpoint: "http://localhost:8000" // remove comment for local
 });
 
 var dynamodb = new AWS.DynamoDB();
 // Create DynamoDB document client
 var docClient = new AWS.DynamoDB.DocumentClient();
+
+var DEFAULT_BOT_IDENTITY = "chatbot"; // change default bot identity name (will be used if a chatbot doesn't have unique dialogue table)
 
 function tables(table_name, callback){
 	var params = {
@@ -25,22 +27,20 @@ function tables(table_name, callback){
 			if (data.TableNames.includes(table_name)){ // check if given bot identity has unique chatbot data table
 				callback(table_name);
 			} else {
-				callback("chatbot"); // default chatbot data table
+				callback(DEFAULT_BOT_IDENTITY); // default chatbot data table
 			}
-			
 		}
 	});
 }
 
 function get_data(table_name, callback){
-	// check if bot_identity has a personality, else use default "chatbot"
+	// check if bot_identity has a personality, else use default chatbot
 	tables(table_name, function(result){ 
 		params = {
 			TableName: result
 		};
 		
-		
-		
+		// return chatbot dialogue of requested identity
 		docClient.scan(params, function(err, data) {
 			if (err) {
 				console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
@@ -51,7 +51,7 @@ function get_data(table_name, callback){
 	});
 }
 
-function create_bot(identity, description, url, new_table, callback){
+function create_bot(identity, description, image_url, bot_name, new_table, callback){
 	var msg = "";
 	// if new dialogue table is needed
 	if (new_table == "yes"){
@@ -87,17 +87,18 @@ function create_bot(identity, description, url, new_table, callback){
 		Item: {
 			"identity":  identity,
 			"description": description,
-			"image_url": url
+			"image_url": image_url,
+			"bot_name": bot_name
 		}
 	};
 	
 	docClient.put(params_identities, function(err, data) {
 		if (err) {
 			console.error("Unable to add item", identity, ". Error JSON:", JSON.stringify(err, null, 2));
-			callback(msg + "<br>Add chatbot <b>failed</b>: <b>" + identity + "</b>. Error message: " + err.message);
+			callback(msg + "Add chatbot <b>failed</b>: <b>" + identity + "</b>. Error message: " + err.message + ".");
 		} else {
 			console.log("PutItem succeeded:", identity);
-			callback(msg + "<br>Add chatbot <b>succeeded</b>: <b>" + identity + "</b>");
+			callback(msg + "Add chatbot <b>succeeded</b>: <b>" + identity + "</b>.");
 		}
 	});
 }
@@ -111,10 +112,10 @@ function delete_bot(identity, callback){
 	dynamodb.deleteTable(params, function(err, data) {
 		if (err) {
 			console.error("Unable to delete table. Error JSON:", JSON.stringify(err, null, 2));
-			msg = "Delete chatbot <b>failed</b>: <b>" + identity + "</b>. Error message: " + err.message;
+			msg = "Delete chatbot <b>failed</b>: <b>" + identity + "</b>. Error message: " + err.message + ".";
 		} else {
 			console.log("Deleted table. Table description JSON:", JSON.stringify(data, null, 2));
-			msg = "Delete chatbot table <b>succeeded</b>: <b>" + identity + "</b>";
+			msg = "Delete chatbot table <b>succeeded</b>: <b>" + identity + "</b>.";
 		}
 	});
 	
@@ -129,33 +130,45 @@ function delete_bot(identity, callback){
 	docClient.delete(params2, function(err, data) {
 		if (err) {
 			console.error("Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
-			callback(msg + "<br>Chatbot <b>" + identity + "</b> delete from bot_identities table <b>failed</b>. Error message: " + err.message);
+			callback(msg + "<br>Chatbot <b>" + identity + "</b> delete from bot_identities table <b>failed</b>. Error message: " + err.message + ".");
 		} else {
 			console.log("DeleteItem succeeded:", JSON.stringify(data, null, 2));
 			callback(msg + "<br>Chatbot <b>" + identity + "</b> delete from bot_identities table <b>succeeded</b>.");
 		}
 	});
 }
-function update_bot(identity, description, url, callback){
-	var params = {
-		TableName: "bot_identities",
-		Key: {
-			"identity":  identity
-		},
-		UpdateExpression: "set description = :x, image_url = :y",
-		ExpressionAttributeValues:{
-        ":x": description,
-        ":y": url
-		}
-	};
-	
-	docClient.update(params, function(err, data) {
-		if (err) {
-			console.error("Unable to update item", identity, ". Error JSON:", JSON.stringify(err, null, 2));
-			callback("Updating chatbot <b>" + identity + "</b> info <b>failed</b>. Error message: " + err.message);
+function update_bot(identity, description, image_url, bot_name, callback){
+	setup(identity, function(bot_identity){
+		if (bot_identity.identity != identity){
+			callback("Updating chatbot <b>" + identity + "</b> info <b>failed</b>. Requested chatbot identity couldn't be found.");
 		} else {
-			console.log("UpdateItem succeeded:", identity);
-			callback("Updating chatbot <b>" + identity + "</b> info succeeded.");
+			// replace empty values with previous values
+			if (description == ""){description = bot_identity.description;}
+			if (image_url == ""){image_url = bot_identity.image_url;}
+			if (bot_name == ""){bot_name = bot_identity.bot_name;}
+			
+			var params = {
+				TableName: "bot_identities",
+				Key: {
+					"identity":  identity
+				},
+				UpdateExpression: "set description = :x, image_url = :y, bot_name = :z",
+				ExpressionAttributeValues:{
+				":x": description,
+				":y": image_url,
+				":z": bot_name
+				}
+			};
+			
+			docClient.update(params, function(err, data) {
+				if (err) {
+					console.error("Unable to update item", identity, ". Error JSON:", JSON.stringify(err, null, 2));
+					callback("Updating chatbot <b>" + identity + "</b> info <b>failed</b>. Error message: " + err.message + ".");
+				} else {
+					console.log("UpdateItem succeeded:", identity);
+					callback("Updating chatbot <b>" + identity + "</b> info succeeded.");
+				}
+			});
 		}
 	});
 }
@@ -186,10 +199,10 @@ function add_response(identity, response, keywords, alternatives, callback){
     docClient.put(params, function(err, data) {
        if (err) {
            console.error("Unable to add item", response, ". Error JSON:", JSON.stringify(err, null, 2));
-		   callback("Chatbot <b>" + identity + "</b> add response <b>failed<b>: <b>" + response + "</b>. Error message: " + err.message);
+		   callback("Chatbot <b>" + identity + "</b> add response <b>failed<b>: <b>" + response + "</b>. Error message: " + err.message + ".");
        } else {
            console.log("PutItem succeeded:", response);
-		   callback("Chatbot <b>" + identity + "</b> add response <b>succeeded</b>: <b>" + response + "</b>");
+		   callback("Chatbot <b>" + identity + "</b> add response <b>succeeded</b>: <b>" + response + "</b>. Keywords are: " + keywords + ".");
        }
     });
 }
@@ -206,10 +219,10 @@ function delete_response(identity, response, callback){
 	docClient.delete(params, function(err, data) {
 		if (err) {
 			console.error("Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
-			callback("Chatbot " + identity + " delete response <b>failed</b>: <b>" + response + "</b>. Error message: " + err.message);
+			callback("Chatbot <b>" + identity + "</b> delete response <b>failed</b>: <b>" + response + "</b>. Error message: " + err.message + ".");
 		} else {
 			console.log("DeleteItem succeeded:", JSON.stringify(data, null, 2));
-			callback("Chatbot " + identity + " delete response <b>succeeded</b>: <b>" + response + "</b>");
+			callback("Chatbot <b>" + identity + "</b> delete response <b>succeeded</b>: <b>" + response + "</b>.");
 		}
 	});
 }
@@ -252,16 +265,21 @@ function chat(msg, user_id, bot_id, callback){
 		
 		for (var x in result){ 					// for each entry in chatbot database
 			var matches = 0;
+			var keywords = 0;
 			for (var y in result[x].keywords){ 	// for each keyword in chatbot database entry
 				var keyword = result[x].keywords[y]; 
+				keywords = keywords + 1;
 				for (var z in message){ 		// for each tokenized word in message
-					var word = natural.PorterStemmer.stem(message[z]); // stem each word
-					//var word = message[z];
+					//var word = natural.PorterStemmer.stem(message[z]); // stem each word
+					var word = message[z];		// Don't stem each word
 					if (word == keyword){		// increase match score if word in message matches with keyword
 						matches = matches + 1;
 					}
 				}
 			}
+			// filter out vague responses by dividing found matches with total keywords in response
+			matches = matches / keywords;
+			
 			// check if better match is found
 			if (matches > best_match_score){
 				best_match_score = matches;
@@ -269,7 +287,7 @@ function chat(msg, user_id, bot_id, callback){
 				best_response = result[x].response;
 			}
 		}
-		// check for alternative responses and select one
+		// check for alternative responses and select one at random
 		if (best_match.hasOwnProperty('alternatives')){
 			
 			var size = best_match.alternatives.length + 1;
@@ -292,7 +310,6 @@ function setup(identity, callback){
 	
 	get_data(identities_table, function(result){
 		var bot = {};
-		var default_bot_identity = "happy"; //change default bot identity name
 		var default_bot = {};
 		
 		// for each bot_identity in bot_identities table
@@ -300,15 +317,17 @@ function setup(identity, callback){
 			// check if selected identity is found in bot_identities table
 			if (result[x].identity == identity){
 				bot = result[x];
-			} else if (result[x].identity == default_bot_identity){ // check for default bot identity and save position in query result
+			} else if (result[x].identity == DEFAULT_BOT_IDENTITY){ // check for default bot identity and save position in query result
 				default_bot = result[x];
 			}
 		}
 		// check if selected identity is not found in bot_identities table
-		if(bot.identity === undefined){
-			callback(default_bot); // return the first bot identity if bot couldn't be found in bot_identities table in database
-		} else {
+		if (bot.identity !== undefined){
 			callback(bot); // return bot info
+		} else if (default_bot.identity !== undefined){
+			callback(default_bot);  // return default bot identity info if requested bot couldn't be found in bot_identities table
+		} else {
+			callback("Error"); // return error if no chatbots could be found
 		}
 	});
 }

@@ -36,18 +36,14 @@ $(document).ready(function () {
 			// send user message to server
 			var url_variables = window.location.search.substring(1);
 			new_url = 'http://' + window.location.hostname + '/messages?' + url_variables;
-			new_url = 'http://' + window.location.hostname + ':3000/messages?' + url_variables; // remove comment for local
+			//new_url = 'http://' + window.location.hostname + ':3000/messages?' + url_variables; // remove comment for local
 			
+			// send message to server and display response
 			post(new_url, function(result){
-				// add bot reply to chatbox
-				if (result[1] == 1){ // check if reply is URL
-					var div_bot = document.createElement("a"); // create 'a' instead of 'div'
-					div_bot.setAttribute('href', result[0]);
-				} else {
-					var div_bot = document.createElement("div");
-				}
+				// create new div for bot message
+				var div_bot = document.createElement("div");
 				div_bot.classList.add("bot-message");
-				div_bot.innerHTML = result[0];
+				div_bot.innerHTML = result;
 				
 				div.appendChild(div_bot);
 				updateScroll();
@@ -67,12 +63,7 @@ $(document).ready(function () {
 		var div = document.getElementById("messages");
 		div.scrollTop = div.scrollHeight;
 	}
-	/*
-	function isUrl(s) {
-		var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
-		return regexp.test(s);
-	}
-	*/
+	
 	function drawChatwindow(bot_identity){
 		// find the body and head of html document
 		var body = document.getElementsByTagName("body")[0];
@@ -131,7 +122,7 @@ $(document).ready(function () {
 		// bot name
 		var h = document.createElement("h1");
 		h.classList.add("name");
-		h.appendChild(document.createTextNode(bot_identity.identity));
+		h.appendChild(document.createTextNode(bot_identity.bot_name));
 		box.appendChild(h);
 		
 		// bot description
@@ -187,10 +178,10 @@ $(document).ready(function () {
 	// get url parameters
 	var url_variables = window.location.search.substring(1);
 	new_url = 'http://' + window.location.hostname + '/chat?' + url_variables;
-	new_url = 'http://' + window.location.hostname + ':3000/chat?' + url_variables; // remove comment for local
+	//new_url = 'http://' + window.location.hostname + ':3000/chat?' + url_variables; // remove comment for local
 	
 	if (test == 1){
-		bot_identity = {identity: "happy", description: "I am feeling good!", image_url: "img/face1.png"};
+		bot_identity = {identity: "happy", description: "I am feeling good!", image_url: "img/face1.png", name: "happyBot"};
 		welcome_message = "Test state. No connection to server.";
 		drawChatwindow(bot_identity);
 	} else {

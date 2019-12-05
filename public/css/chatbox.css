@@ -72,7 +72,7 @@ body {
 
 /* Add styles to the form container */
 .chat-box {
-  max-width: 300px;
+  width: 350px;
   background-color: white;
   min-height: 200px;
 }
@@ -101,8 +101,7 @@ body {
 
 /* Bot messages */
 .chat-box .messages{
-  max-height: 200px;
-  min-height: 200px;
+  height: 200px;
   padding: 5px;
   margin: 0px 5px 5px 5px;
   border: 3px;
@@ -133,7 +132,7 @@ body {
 
 .chat-box .text-area {
   height: 30px;
-  width: 255px;
+  width: 305px;
   margin: 0px 5px 5px 5px;
   border: 3px solid #f1f1f1;
   padding: 5px;

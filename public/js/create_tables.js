@@ -4,7 +4,7 @@ var AWS = require("aws-sdk");
 // Set the region
 AWS.config.update({
   region: "eu-north-1",
-  endpoint: "http://localhost:8000" //remove comment for local
+  //endpoint: "http://localhost:8000" //remove comment for local
 });
 
 var dynamodb = new AWS.DynamoDB();
@@ -103,7 +103,7 @@ var params3 = {
         WriteCapacityUnits: 1
     }
 };
-/*
+
 console.log("creating happysad table");
 dynamodb.createTable(paramsA, function(err, data) {
     if (err) {
@@ -136,6 +136,7 @@ dynamodb.createTable(paramsD, function(err, data) {
         console.log("Created table1. Table description JSON:", JSON.stringify(data, null, 2));
     }
 });
+
 console.log("creating chatbot table");
 dynamodb.createTable(params, function(err, data) {
     if (err) {
@@ -144,7 +145,7 @@ dynamodb.createTable(params, function(err, data) {
         console.log("Created table1. Table description JSON:", JSON.stringify(data, null, 2));
     }
 });
-*/
+
 console.log("creating bot_identities table");
 dynamodb.createTable(params2, function(err, data) {
     if (err) {
@@ -153,7 +154,7 @@ dynamodb.createTable(params2, function(err, data) {
         console.log("Created table2. Table description JSON:", JSON.stringify(data, null, 2));
     }
 });
-/*
+
 console.log("creating chat_history table");
 dynamodb.createTable(params3, function(err, data) {
     if (err) {
@@ -162,4 +163,3 @@ dynamodb.createTable(params3, function(err, data) {
         console.log("Created table3. Table description JSON:", JSON.stringify(data, null, 2));
     }
 });
-*/
