@@ -129,15 +129,10 @@ app.post('/messages', function(req, res){
 		console.log(array);
 		
 		if (array.length){
-			var url = "";
-			if (best_result.includes("user_id")){
-				url = best_result.replace("user_id", user_id); // attach user id to questionnaire url
-			} else {
-				url = best_result;
-			}
+			var url = best_result;
 			for (var x in array){
 				var href = '<a href="' + array[x].href + '">' + array[x].value + '</a>';
-				url = url.replace(array[x].value, href);
+				url = best_result.replace(array[x].value, href);
 			}
 			res.send(url); // send url, and 1 to signify this is an url
 		} else {
