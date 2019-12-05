@@ -250,6 +250,15 @@ function store_data(table_name, data, callback){
 		}
 	});
 }
+function replace_user_id(user_id, best_response, callback){
+	// replace generic 'user_id' with actual user_id 
+	if (best_response.includes("user_id")){
+		var new_response = best_response.replace("user_id", user_id); // attach user id to questionnaire url
+		callback(new_response);
+	} else {
+		callback(best_response);
+	}
+}
 
 function chat(msg, user_id, bot_id, callback){
 	var history_table = "chat_history";
@@ -301,7 +310,11 @@ function chat(msg, user_id, bot_id, callback){
 		// store user_id, bot_id, user message, and bot response to chat_history table in database
 		data =  [ user_id, bot_id, msg, best_response ];
 		store_data(history_table, data);
-		callback(best_response);
+		
+		// replace generic 'user_id' with actual user_id
+		replace_user_id(user_id, best_response, function(result){
+			callback(result);
+		});
 	});
 }
 
