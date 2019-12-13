@@ -276,7 +276,7 @@ function chat(msg, user_id, bot_id, callback){
 			var matches = 0;
 			var keywords = 0;
 			for (var y in result[x].keywords){ 	// for each keyword in chatbot database entry
-				var keyword = result[x].keywords[y]; 
+				var keyword = result[x].keywords[y].toLowerCase();
 				keywords = keywords + 1;
 				for (var z in message){ 		// for each tokenized word in message
 					//var word = natural.PorterStemmer.stem(message[z]); // stem each word
