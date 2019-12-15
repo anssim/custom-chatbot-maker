@@ -15,6 +15,8 @@ var dynamodb = new AWS.DynamoDB();
 var docClient = new AWS.DynamoDB.DocumentClient();
 
 var DEFAULT_BOT_IDENTITY = "chatbot"; // change default bot identity name (will be used if a chatbot doesn't have unique dialogue table)
+var DEFAULT_RESPONSE = {response: "I don't know what you mean.",  // default response, if no match found
+						alternatives:  ["Please repeat.", "I didn't catch that.", "I am confused."]};
 
 function tables(table_name, callback){
 	var params = {
@@ -270,25 +272,40 @@ function chat(msg, user_id, bot_id, callback){
 	get_data(bot_id, function(result){
 		var best_match_score = 0;
 		var best_match = {};
-		var best_response = "I don't know what you mean."; // default response, if no match found
+		var best_response = DEFAULT_RESPONSE.response;
+		var best_match = DEFAULT_RESPONSE;
 		
 		for (var x in result){ 					// for each entry in chatbot database
 			var matches = 0;
-			var keywords = 0;
+			var best_combined_score = 0;
+			var combined_word_score = 0;
+			
 			for (var y in result[x].keywords){ 	// for each keyword in chatbot database entry
+				var word_score = 0;
+				
 				var keyword = result[x].keywords[y].toLowerCase();
-				keywords = keywords + 1;
+				keyword = natural.PorterStemmer.stem(keyword); // stem each keyword
+				
 				for (var z in message){ 		// for each tokenized word in message
-					//var word = natural.PorterStemmer.stem(message[z]); // stem each word
-					var word = message[z];		// Don't stem each word
-					if (word == keyword){		// increase match score if word in message matches with keyword
-						matches = matches + 1;
+					var char_match = 0;
+					var word = natural.PorterStemmer.stem(message[z]); // stem each word
+					//var word = message[z];		// don't stem each word in message
+					for (var w = 0; w < word.length; w++){ // for each character in tokenized word
+						if (word[w] == keyword[w]){
+							char_match = char_match + 1;
+						}
 					}
+					word_score = char_match / word.length; // normalize score
+					if (word_score == 1.0){ // boost exact word match
+						word_score = word_score * 10;
+					} else if (word_score < 0.55) { // remove word scores for words that do not resemble keyword
+						word_score = 0.0;
+					}
+					combined_word_score = combined_word_score + word_score;
 				}
 			}
 			// filter out vague responses by dividing found matches with total keywords in response
-			matches = matches / keywords;
-			
+			matches = combined_word_score / (result[x].keywords.length);
 			// check if better match is found
 			if (matches > best_match_score){
 				best_match_score = matches;
@@ -307,11 +324,12 @@ function chat(msg, user_id, bot_id, callback){
 				best_response = best_match.alternatives[random-1];
 			}
 		}
+		
 		// store user_id, bot_id, user message, and bot response to chat_history table in database
 		data =  [ user_id, bot_id, msg, best_response ];
 		store_data(history_table, data);
 		
-		// replace generic 'user_id' with actual user_id
+		// replace generic 'user_id' with actual user_id for urls
 		replace_user_id(user_id, best_response, function(result){
 			callback(result);
 		});

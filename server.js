@@ -96,7 +96,7 @@ app.post('/messages', function(req, res){
 	
 	// check user_id on query
 	if (user_id === undefined){ 
-		// check if user_id is in cookies
+		// check user_id on cookies
 		if (req.cookies.user_id === undefined) {
 			// generate new user_id
 			var result = '';
@@ -120,21 +120,20 @@ app.post('/messages', function(req, res){
 			bot_id = String(req.cookies.bot_id);
 		}
 	}
-	// user message
+	// user message lowercase
 	var msg = req.body.text.toLowerCase();
 	
 	// give user message to chatbot and send bot reply to client
 	bot.chat(msg, user_id, bot_id, function(best_result) {
 		var array = linkify.find(best_result);
-		console.log(array);
 		
 		if (array.length){
 			var url = best_result;
 			for (var x in array){
 				var href = '<a href="' + array[x].href + '">' + array[x].value + '</a>';
-				url = best_result.replace(array[x].value, href);
+				url = url.replace(array[x].value, href);
 			}
-			res.send(url); // send url, and 1 to signify this is an url
+			res.send(url); // send modified url
 		} else {
 			res.send(best_result); // send bot reply
 		}
