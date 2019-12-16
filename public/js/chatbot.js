@@ -294,7 +294,6 @@ function chat(msg, user_id, bot_id, callback){
 					
 					levenshtein_distance  = levenshtein(word, keyword);
 					
-					//word_score = char_match / word.length; // normalize score
 					if (levenshtein_distance == 0){ // boost exact word match
 						word_score = 10;
 					} else if (levenshtein_distance == 1) { // allow one distance off from keyword
