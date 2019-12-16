@@ -1,6 +1,9 @@
 // set up word tokenizer
 var natural = require('natural');
 var tokenizer = new natural.WordTokenizer();
+// levenshtein
+const levenshtein = require('js-levenshtein');
+
 // Load the AWS SDK for Node.js
 var AWS = require("aws-sdk");
 
@@ -271,35 +274,33 @@ function chat(msg, user_id, bot_id, callback){
 	// decide best response
 	get_data(bot_id, function(result){
 		var best_match_score = 0;
-		var best_match = {};
 		var best_response = DEFAULT_RESPONSE.response;
 		var best_match = DEFAULT_RESPONSE;
 		
 		for (var x in result){ 					// for each entry in chatbot database
 			var matches = 0;
-			var best_combined_score = 0;
 			var combined_word_score = 0;
+			var levenshtein_distance = 0;
 			
 			for (var y in result[x].keywords){ 	// for each keyword in chatbot database entry
 				var word_score = 0;
 				
-				var keyword = result[x].keywords[y].toLowerCase();
+				var keyword = result[x].keywords[y].toLowerCase(); // lowercase
 				keyword = natural.PorterStemmer.stem(keyword); // stem each keyword
 				
 				for (var z in message){ 		// for each tokenized word in message
-					var char_match = 0;
+					
 					var word = natural.PorterStemmer.stem(message[z]); // stem each word
-					//var word = message[z];		// don't stem each word in message
-					for (var w = 0; w < word.length; w++){ // for each character in tokenized word
-						if (word[w] == keyword[w]){
-							char_match = char_match + 1;
-						}
-					}
-					word_score = char_match / word.length; // normalize score
-					if (word_score == 1.0){ // boost exact word match
-						word_score = word_score * 10;
-					} else if (word_score < 0.55) { // remove word scores for words that do not resemble keyword
-						word_score = 0.0;
+					
+					levenshtein_distance  = levenshtein(word, keyword);
+					
+					//word_score = char_match / word.length; // normalize score
+					if (levenshtein_distance == 0){ // boost exact word match
+						word_score = 10;
+					} else if (levenshtein_distance == 1) { // allow one distance off from keyword
+						word_score = 1;
+					} else if (levenshtein_distance > 1){ // remove word scores for words that do not resemble keyword
+						word_score = 0;
 					}
 					combined_word_score = combined_word_score + word_score;
 				}

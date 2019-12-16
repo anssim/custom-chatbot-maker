@@ -13,6 +13,7 @@
     "cookie-parser": "^1.4.4",
     "express": "^4.16.4",
     "jquery": "^3.4.1",
+    "js-levenshtein": "^1.1.6",
     "linkifyjs": "^2.1.8",
     "natural": "^0.6.3"
   }
