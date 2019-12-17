@@ -180,11 +180,13 @@ Required packages:
 		});
 	});
 	
-2. Run server locally with command 'node server.js'. Ports will likely need to be setup first. 
+2. Run server locally with command 'node server.js'. For local use, port 3000 needs to be specified in documents chatwindow.js and modify.html.
 
 3. Create and modify bots by adding bots to database. For quick access, setup password in server.js and navigate to route /modify.html?p=1234.
 
-4. Talk to bot by adding 'bot_id' as url parameter. Example: 'http://localhost:3000/?user_id=01&bot_id=happy'
+4. Talk to bot by adding 'bot_id' as url parameter. 
+Identify user by adding 'user_id' as url parameter. 
+Example url: 'http://localhost:3000/?user_id=111&bot_id=happy'
 
 	
 ## License
