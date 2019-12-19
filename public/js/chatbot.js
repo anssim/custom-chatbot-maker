@@ -294,11 +294,11 @@ function chat(msg, user_id, bot_id, callback){
 					
 					levenshtein_distance  = levenshtein(word, keyword);
 					
-					if (levenshtein_distance == 0){ // boost exact word match
-						word_score = 10;
-					} else if (levenshtein_distance == 1) { // allow one distance off from keyword
+					if (levenshtein_distance == 0){ // score word match
 						word_score = 1;
-					} else if (levenshtein_distance > 1){ // remove word scores for words that do not resemble keyword
+					} else if (levenshtein_distance == 1){ // reduced score for misspelling
+						word_score = 0.8;
+					} else { // remove word scores for words that do not resemble keyword
 						word_score = 0;
 					}
 					combined_word_score = combined_word_score + word_score;
@@ -307,7 +307,7 @@ function chat(msg, user_id, bot_id, callback){
 			// filter out vague responses by dividing found matches with total keywords in response
 			matches = combined_word_score / (result[x].keywords.length);
 			// check if better match is found
-			if (matches > best_match_score){
+			if (matches > best_match_score && matches > 0.45){
 				best_match_score = matches;
 				best_match = result[x];
 				best_response = result[x].response;
@@ -324,7 +324,6 @@ function chat(msg, user_id, bot_id, callback){
 				best_response = best_match.alternatives[random-1];
 			}
 		}
-		
 		// store user_id, bot_id, user message, and bot response to chat_history table in database
 		data =  [ user_id, bot_id, msg, best_response ];
 		store_data(history_table, data);

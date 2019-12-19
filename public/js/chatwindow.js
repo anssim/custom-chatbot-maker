@@ -35,9 +35,9 @@ $(document).ready(function () {
 			
 			// send user message to server
 			var url_variables = window.location.search.substring(1);
-			new_url = 'http://' + window.location.hostname + '/messages?' + url_variables;
-			//new_url = 'http://' + window.location.hostname + ':3000/messages?' + url_variables; // remove comment for local
-			
+			new_url = window.location.protocol + '//' + window.location.hostname + '/messages?' + url_variables;
+			//new_url = window.location.protocol + '//' + window.location.hostname + ':3000/messages?' + url_variables; // remove comment for local
+			console.log(window.location.protocol);
 			// send message to server and display response
 			post(new_url, function(result){
 				// create new div for bot message
@@ -177,8 +177,8 @@ $(document).ready(function () {
 	
 	// get url parameters
 	var url_variables = window.location.search.substring(1);
-	new_url = 'http://' + window.location.hostname + '/chat?' + url_variables;
-	//new_url = 'http://' + window.location.hostname + ':3000/chat?' + url_variables; // remove comment for local
+	new_url = window.location.protocol + '//' + window.location.hostname + '/chat?' + url_variables;
+	//new_url = window.location.protocol + '//' + window.location.hostname + ':3000/chat?' + url_variables; // remove comment for local
 	
 	if (test == 1){
 		bot_identity = {identity: "happy", description: "I am feeling good!", image_url: "img/face1.png", name: "happyBot"};

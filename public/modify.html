@@ -122,7 +122,9 @@
 					e.preventDefault();
 					var url_variables = window.location.search.substring(1);
 					$.ajax({
-						url: 'http://' + window.location.hostname + '/chatbot?' + url_variables,
+						// url: window.location.protocol + '//' + window.location.hostname + ':3000/chatbot?' + url_variables, local use
+						// url: window.location.protocol + '//' + window.location.hostname + '/chatbot?' + url_variables,
+						url: window.location.protocol + '//' + window.location.hostname + '/chatbot?' + url_variables,
 						type: "POST",
 						dataType: 'json',
 						data: $('#createForm').serialize(),
@@ -136,7 +138,7 @@
 					e.preventDefault();
 					var url_variables = window.location.search.substring(1);
 					$.ajax({
-						url: 'http://' + window.location.hostname + '/del_chatbot?' + url_variables,
+						url: window.location.protocol + '//' + window.location.hostname + '/del_chatbot?' + url_variables,
 						type: "POST",
 						dataType: 'json',
 						data: $('#deleteForm').serialize(),
@@ -150,7 +152,7 @@
 					e.preventDefault();
 					var url_variables = window.location.search.substring(1);
 					$.ajax({
-						url: 'http://' + window.location.hostname + '/update_chatbot?' + url_variables,
+						url: window.location.protocol + '//' + window.location.hostname + '/update_chatbot?' + url_variables,
 						type: "POST",
 						dataType: 'json',
 						data: $('#updateForm').serialize(),
@@ -165,7 +167,7 @@
 					e.preventDefault();
 					var url_variables = window.location.search.substring(1);
 					$.ajax({
-						url: 'http://' + window.location.hostname + '/response?' + url_variables,
+						url: window.location.protocol + '//' + window.location.hostname + '/response?' + url_variables,
 						type: "POST",
 						dataType: 'json',
 						data: $('#addResponseForm').serialize(),
@@ -179,7 +181,7 @@
 					e.preventDefault();
 					var url_variables = window.location.search.substring(1);
 					$.ajax({
-						url: 'http://' + window.location.hostname + '/del_response?' + url_variables,
+						url: window.location.protocol + '//' + window.location.hostname + '/del_response?' + url_variables,
 						type: "POST",
 						dataType: 'json',
 						data: $('#deleteResponseForm').serialize(),
