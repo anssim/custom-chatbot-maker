@@ -10,7 +10,7 @@ var AWS = require("aws-sdk");
 // Set the region
 AWS.config.update({
   region: "eu-north-1",
-  //endpoint: "http://localhost:8000" // remove comment for local
+  endpoint: "http://localhost:8000" // remove comment for local
 });
 
 var dynamodb = new AWS.DynamoDB();
@@ -264,6 +264,13 @@ function replace_user_id(user_id, best_response, callback){
 		callback(best_response);
 	}
 }
+function return_longer(keyword, word){
+	if (word.length > keyword.length){
+		return word.length;
+	} else {
+		return keyword.length;
+	}
+}
 
 function chat(msg, user_id, bot_id, callback){
 	var history_table = "chat_history";
@@ -278,44 +285,47 @@ function chat(msg, user_id, bot_id, callback){
 		var best_match = DEFAULT_RESPONSE;
 		
 		for (var x in result){ 					// for each entry in chatbot database
-			var matches = 0;
-			var combined_word_score = 0;
-			var levenshtein_distance = 0;
+			var match_score = 0;
+			var combined_message_score = 0;
 			
 			for (var y in result[x].keywords){ 	// for each keyword in chatbot database entry
 				var word_score = 0;
-				
+				var levenshtein_distance = 0;
+				var longer_word_length = 0;
+			
 				var keyword = result[x].keywords[y].toLowerCase(); // lowercase
 				keyword = natural.PorterStemmer.stem(keyword); // stem each keyword
 				
 				for (var z in message){ 		// for each tokenized word in message
 					
-					var word = natural.PorterStemmer.stem(message[z]); // stem each word
+					var word = natural.PorterStemmer.stem(message[z]); // stem each word in message
 					
-					levenshtein_distance  = levenshtein(word, keyword);
+					levenshtein_distance  = levenshtein(word, keyword); // calculate similarity between words
+					longer_word_length = return_longer(keyword, word); // return longer of the two words
 					
-					if (levenshtein_distance == 0){ // score word match
-						word_score = 1;
-					} else if (levenshtein_distance == 1){ // reduced score for misspelling
-						word_score = 0.8;
-					} else { // remove word scores for words that do not resemble keyword
-						word_score = 0;
+					word_score = 1 - (levenshtein_distance / longer_word_length); // calculate word score
+					
+					if (word_score < 0.6){
+						word_score = 0; // remove score from words that are too far apart
 					}
-					combined_word_score = combined_word_score + word_score;
+					combined_message_score = combined_message_score + word_score;
 				}
 			}
 			// filter out vague responses by dividing found matches with total keywords in response
-			matches = combined_word_score / (result[x].keywords.length);
+			match_score = combined_message_score / (result[x].keywords.length);
+			
 			// check if better match is found
-			if (matches > best_match_score && matches > 0.45){
-				best_match_score = matches;
-				best_match = result[x];
+			if (match_score > best_match_score && match_score > 0.45){
+				best_match_score = match_score;
 				best_response = result[x].response;
+				best_match = result[x];
+			} else if (match_score == 1 && result[x].keywords.length > best_match.keywords.length) { // in case of multiple perfect matches pick most accurate one
+				best_response = result[x].response;
+				best_match = result[x];
 			}
 		}
 		// check for alternative responses and select one at random
 		if (best_match.hasOwnProperty('alternatives')){
-			
 			var size = best_match.alternatives.length + 1;
 			var random = Math.floor(Math.random() * size);
 			if (random == 0){
