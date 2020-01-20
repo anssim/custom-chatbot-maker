@@ -123,7 +123,7 @@ app.post('/messages', function(req, res){
 	} else {
 		res.cookie('bot_id', bot_id);
 	}
-	// check cookie for bot_id
+	// check cookie for meta data
 	if (meta === undefined){
 		if (req.cookies.meta !== undefined) {
 			meta = String(req.cookies.meta);
