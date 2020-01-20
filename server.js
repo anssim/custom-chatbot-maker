@@ -93,6 +93,7 @@ app.post('/del_response', function(req, res){
 app.post('/messages', function(req, res){
 	var user_id = req.query.user_id;
 	var bot_id = req.query.bot_id;
+	var meta = req.query.meta;
 	
 	// check user_id on query
 	if (user_id === undefined){ 
@@ -119,12 +120,22 @@ app.post('/messages', function(req, res){
 		if (req.cookies.bot_id !== undefined) {
 			bot_id = String(req.cookies.bot_id);
 		}
+	} else {
+		res.cookie('bot_id', bot_id);
+	}
+	// check cookie for bot_id
+	if (meta === undefined){
+		if (req.cookies.meta !== undefined) {
+			meta = String(req.cookies.meta);
+		}
+	} else {
+		res.cookie('meta', meta);
 	}
 	// user message lowercase
 	var msg = req.body.text.toLowerCase();
 	
 	// give user message to chatbot and send bot reply to client
-	bot.chat(msg, user_id, bot_id, function(best_result) {
+	bot.chat(msg, user_id, bot_id, meta, function(best_result) {
 		var array = linkify.find(best_result);
 		
 		if (array.length){

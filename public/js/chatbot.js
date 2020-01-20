@@ -232,7 +232,7 @@ function delete_response(identity, response, callback){
 	});
 }
 
-function store_data(table_name, data, callback){
+function store_data(table_name, data, meta, callback){
 	// Create DynamoDB document client
 	//var docClient = new AWS.DynamoDB.DocumentClient();
 	var date = new Date();
@@ -241,6 +241,7 @@ function store_data(table_name, data, callback){
 		Item:{
 			"user_id": data[0],
 			"datetime": date.toISOString(),
+			"meta": meta,
 			"user_message": data[2],
 			"bot_id": data[1],
 			"bot_response": data[3]
@@ -272,7 +273,7 @@ function return_longer(keyword, word){
 	}
 }
 
-function chat(msg, user_id, bot_id, callback){
+function chat(msg, user_id, bot_id, meta, callback){
 	var history_table = "chat_history";
 	
 	// tokenize message
@@ -336,7 +337,7 @@ function chat(msg, user_id, bot_id, callback){
 		}
 		// store user_id, bot_id, user message, and bot response to chat_history table in database
 		data =  [ user_id, bot_id, msg, best_response ];
-		store_data(history_table, data);
+		store_data(history_table, data, meta);
 		
 		// replace generic 'user_id' with actual user_id for urls
 		replace_user_id(user_id, best_response, function(result){
